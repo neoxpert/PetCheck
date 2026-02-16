@@ -1,0 +1,14 @@
+## Title: Pet Checker
+## Notes: Checking for active pet
+## Author: Neoxpert
+
+## Interface: 120000
+## Version: 0.0.1
+
+## Category: Utility
+
+## SavedVariablesPerCharacter: PetStatus
+
+event_listener.lua
+
+app.lua
