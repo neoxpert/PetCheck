@@ -2,8 +2,8 @@
 ## Notes: Checking for active pet
 ## Author: Neoxpert
 
-## Interface: 120000
-## Version: 0.0.1
+## Interface: 120000 120001
+## Version: 0.0.2
 
 ## Category: Utility
 

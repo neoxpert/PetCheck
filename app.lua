@@ -60,6 +60,10 @@ function PetListener:initialize()
         PetStatus.petWasDead = false
     end
 
+    if PetStatus.onlyInInstance == nil then
+        PetStatus.onlyInInstance = true
+    end
+
     local point = PetStatus.point or "CENTER"
     local relPoint = PetStatus.relPoint or "CENTER"
     local x = PetStatus.x or 0
@@ -153,6 +157,10 @@ function PetListener:registerEvents()
         me:initialize()
     end)
 
+    self:on("ZONE_CHANGED_NEW_AREA", function(...)
+        me:updatePetStatus()
+    end)
+
     self:on("UNIT_PET", function(f, _, unit)
         if unit == "player" then
             me:updatePetStatus()
@@ -169,6 +177,13 @@ end
 function PetListener:updatePetStatus()
     local textFrame = self.textFrame
     local text = self.text
+
+    local inInstance, instanceType = IsInInstance()
+
+    if PetStatus.onlyInInstance and not inInstance then
+        textFrame:Hide()
+        return
+    end
 
     -- Pet exists and not dead? Reset the store variable, hide the text.
     if UnitExists("pet") and not UnitIsDeadOrGhost("pet") then
@@ -222,10 +237,14 @@ local function OnSettingChanged(setting, value)
     if setting:GetVariable() == "PetStatus_Blink_Toggle" then
         petlistener:setBlink(value)
     end
+
+    if setting:GetVariable() == "PetStatus_InInstance_Toggle" then
+        petlistener:updatePetStatus()
+    end
 end
 
 do
-    local name = "Blinkender Text"
+    local name = "Blinking Text"
     local variable = "PetStatus_Blink_Toggle"
     local defaultValue = false
 
@@ -242,6 +261,27 @@ do
     setting:SetValueChangedCallback(OnSettingChanged)
 
     local tooltip = "Activates blinking text."
+    Settings.CreateCheckbox(category, setting, tooltip)
+end
+
+do
+    local name = "Only in instance"
+    local variable = "PetStatus_InInstance_Toggle"
+    local defaultValue = false
+
+    local function GetValue()
+        return PetStatus.onlyInInstance or defaultValue
+    end
+
+    local function SetValue(value)
+        PetStatus.onlyInInstance = value
+    end
+
+    local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue,
+        SetValue)
+    setting:SetValueChangedCallback(OnSettingChanged)
+
+    local tooltip = "Only show when in instance."
     Settings.CreateCheckbox(category, setting, tooltip)
 end
 
