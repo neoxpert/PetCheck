@@ -3,7 +3,7 @@
 ## Author: Neoxpert
 
 ## Interface: 120000 120001
-## Version: 0.0.2
+## Version: 0.0.3
 
 ## Category: Utility
 

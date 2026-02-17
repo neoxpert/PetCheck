@@ -2,6 +2,31 @@ if select(2, UnitClass("player")) ~= "HUNTER" then
     return;
 end
 
+local currentLocale = GetLocale()
+
+local locale = "en"
+
+if currentLocale == "deDE" then
+    locale = "de"
+end
+
+local messages = {
+    ["de"] = {
+        ["dead"] = "Dein Begleiter ist tot!",
+        ["not_active"] = "Dein Begleiter ist nicht da!",
+        ["blinking_text_option"] = "Blinkender Text",
+        ["blinking_text_tooltip"] = "Aktiviert oder deaktiviert blinkenden Text",
+        ["only_in_instance_option"] = "Nur in Instanzen anzeigen"
+    },
+    ["en"] = {
+        ["dead"] = "Your pet is dead!",
+        ["not_active"] = "No active pet!",
+        ["blinking_text_option"] = "Blinking text",
+        ["blinking_text_tooltip"] = "Enables or disables blinking text animation",
+        ["only_in_instance_option"] = "Only show when in instances"
+    }
+}
+
 PetStatus = PetStatus or {}
 
 PetListener = setmetatable({}, { __index = EventListener })
@@ -199,11 +224,11 @@ function PetListener:updatePetStatus()
         -- Save it for later checks after reload, zone change etc.
         PetStatus.petWasDead = true
 
-        text:SetText("Your pet is dead!")
+        text:SetText(messages[locale]["dead"])
         text:SetTextColor(1, 0.4, 0.4)
         textFrame:Show()
     elseif not UnitExists("pet") then
-        text:SetText("No active pet!")
+        text:SetText(messages[locale]["not_active"])
         text:SetTextColor(1, 0.2, 0.2)
         textFrame:Show()
     else
@@ -244,7 +269,7 @@ local function OnSettingChanged(setting, value)
 end
 
 do
-    local name = "Blinking Text"
+    local name =  messages[locale]["blinking_text_option"]
     local variable = "PetStatus_Blink_Toggle"
     local defaultValue = false
 
@@ -260,12 +285,12 @@ do
         SetValue)
     setting:SetValueChangedCallback(OnSettingChanged)
 
-    local tooltip = "Activates blinking text."
+    local tooltip = messages[locale]["blinking_text_tooltip"]
     Settings.CreateCheckbox(category, setting, tooltip)
 end
 
 do
-    local name = "Only in instance"
+    local name = messages[locale]["only_in_instance_option"]
     local variable = "PetStatus_InInstance_Toggle"
     local defaultValue = false
 
@@ -281,8 +306,7 @@ do
         SetValue)
     setting:SetValueChangedCallback(OnSettingChanged)
 
-    local tooltip = "Only show when in instance."
-    Settings.CreateCheckbox(category, setting, tooltip)
+    Settings.CreateCheckbox(category, setting)
 end
 
 Settings.RegisterAddOnCategory(category)
